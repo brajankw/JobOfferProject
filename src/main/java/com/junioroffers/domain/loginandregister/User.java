@@ -4,7 +4,7 @@ import lombok.Builder;
 
 @Builder
 record User(
-        Long id,
+        String id,
         String username,
         String password) {
 }
