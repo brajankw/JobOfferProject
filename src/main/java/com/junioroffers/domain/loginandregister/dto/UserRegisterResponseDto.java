@@ -4,5 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record UserRegisterResponseDto(
-        String message) {
+        String message,
+        String userId,
+        String username) {
 }

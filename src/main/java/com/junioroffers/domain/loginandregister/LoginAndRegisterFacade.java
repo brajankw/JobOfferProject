@@ -17,7 +17,7 @@ public class LoginAndRegisterFacade {
         List<ValidationResult> validationResultList = userValidator.validate(userRegisterDto);
         if (!validationResultList.isEmpty()) {
             String resultMessage = userValidator.createResultMessage();
-            return new UserRegisterResponseDto(resultMessage);
+            return new UserRegisterResponseDto(resultMessage, null, null);
         }
 
         User userToSave = User.builder()
@@ -25,9 +25,9 @@ public class LoginAndRegisterFacade {
                 .password(userRegisterDto.password())
                 .build();
 
-        userRepository.save(userToSave);
+        User savedUser = userRepository.save(userToSave);
 
-        return new UserRegisterResponseDto(ValidationResult.INPUT_SUCCESS.info);
+        return new UserRegisterResponseDto(ValidationResult.INPUT_SUCCESS.info, savedUser.id(), savedUser.username());
     }
 
     public UserDto findByUsername(String username) {

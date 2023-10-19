@@ -6,6 +6,7 @@ import com.junioroffers.domain.loginandregister.dto.UserRegisterResponseDto;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class LoginAndRegisterFacadeTest {
@@ -28,8 +29,11 @@ class LoginAndRegisterFacadeTest {
         UserRegisterResponseDto response = loginAndRegisterFacade.registerUser(userRegisterDto);
 
         // then
-        UserRegisterResponseDto expectedResponse = new UserRegisterResponseDto(ValidationResult.INPUT_SUCCESS.info);
-        assertThat(response).isEqualTo(expectedResponse);
+        assertAll(
+                () -> assertThat(response.message()).isEqualTo(ValidationResult.INPUT_SUCCESS.info),
+                () -> assertThat(response.username()).isEqualTo(testUsername)
+        );
+
     }
 
     @Test
@@ -51,8 +55,7 @@ class LoginAndRegisterFacadeTest {
         UserRegisterResponseDto response = loginAndRegisterFacade.registerUser(userRegisterDto);
 
         // then
-        UserRegisterResponseDto expectedResponse = new UserRegisterResponseDto(ValidationResult.USERNAME_TAKEN.info);
-        assertThat(response).isEqualTo(expectedResponse);
+        assertThat(response.message()).isEqualTo(ValidationResult.USERNAME_TAKEN.info);
     }
 
     @Test
@@ -69,8 +72,7 @@ class LoginAndRegisterFacadeTest {
         UserRegisterResponseDto response = loginAndRegisterFacade.registerUser(userRegisterDto);
 
         // then
-        UserRegisterResponseDto expectedResponse = new UserRegisterResponseDto(ValidationResult.PASSWORD_NOT_EQUAL_TO_CONFIRM_PASSWORD.info);
-        assertThat(response).isEqualTo(expectedResponse);
+        assertThat(response.message()).isEqualTo(ValidationResult.PASSWORD_NOT_EQUAL_TO_CONFIRM_PASSWORD.info);
     }
 
     @Test
@@ -87,8 +89,7 @@ class LoginAndRegisterFacadeTest {
         UserRegisterResponseDto response = loginAndRegisterFacade.registerUser(userRegisterDto);
 
         // then
-        UserRegisterResponseDto expectedResponse = new UserRegisterResponseDto(ValidationResult.FIELDS_MUST_NOT_BE_NULL.info);
-        assertThat(response).isEqualTo(expectedResponse);
+        assertThat(response.message()).isEqualTo(ValidationResult.FIELDS_MUST_NOT_BE_NULL.info);
     }
 
     @Test
@@ -105,22 +106,19 @@ class LoginAndRegisterFacadeTest {
         UserRegisterResponseDto response = loginAndRegisterFacade.registerUser(userRegisterDto);
 
         // then
-        UserRegisterResponseDto expectedResponse = new UserRegisterResponseDto(ValidationResult.FIELDS_MUST_NOT_BE_EMPTY.info);
-        assertThat(response).isEqualTo(expectedResponse);
+        assertThat(response.message()).isEqualTo(ValidationResult.FIELDS_MUST_NOT_BE_EMPTY.info);
     }
 
     @Test
     public void should_find_user_by_username() {
         //given
-        Long id = 1L;
         LoginAndRegisterFacade loginAndRegisterFacade = new LoginAndRegisterConfiguration().createForTest(userRepository);
         User toSave = User.builder()
-                .id(id)
                 .username(testUsername)
                 .password(testPassword)
                 .build();
-        userRepository.save(toSave);
-        UserDto expectedUser = new UserDto(id, testUsername, testPassword);
+        User savedUser = userRepository.save(toSave);
+        UserDto expectedUser = new UserDto(savedUser.id(), testUsername, testPassword);
         //when
         UserDto user = loginAndRegisterFacade.findByUsername(testUsername);
         //then

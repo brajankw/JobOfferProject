@@ -2,6 +2,7 @@ package com.junioroffers.domain.loginandregister;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class InMemoryUserRepositoryTestImpl implements UserRepository {
@@ -19,7 +20,13 @@ public class InMemoryUserRepositoryTestImpl implements UserRepository {
     }
 
     @Override
-    public User save(User user) {
-        return userMap.put(user.username(), user);
+    public User save(User entity) {
+        UUID id = UUID.randomUUID();
+        User user = new User(
+                id.toString(),
+                entity.username(),
+                entity.password());
+        userMap.put(user.username(), user);
+        return user;
     }
 }
